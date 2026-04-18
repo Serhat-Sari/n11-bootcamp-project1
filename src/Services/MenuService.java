@@ -32,7 +32,9 @@ public class MenuService {
         input.nextLine();
         return option;
     }
-
+    /*
+        Shows the payment methods user has in their account.
+    */
     public IPayment showPaymentMethodMenu(ArrayList<IPayment> userMethods) {
         for (int i = 0; i < userMethods.size(); i++) {
             System.out.println((i + 1) + ". " + userMethods.get(i).getPaymentType());
@@ -46,6 +48,9 @@ public class MenuService {
         return userMethods.get(choice - 1);
     }
 
+    /*
+        Adds a payment method to the users account.
+    */
     public IPayment showAddMethodMenu() {
         System.out.println("Choose payment method to add:");
         for (int i = 0; i < availableMethods.size(); i++) {

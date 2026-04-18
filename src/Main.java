@@ -15,6 +15,8 @@ public class Main {
        Payment payment = new Payment(user);
        MenuService menu = new MenuService(input);
        ActionHandler handler = new ActionHandler(user, payment, menu);
+
+       // Endless loop that works until user decides to quit.
        while(handler.handle(menu.showMainMenu()));
     }
 }
