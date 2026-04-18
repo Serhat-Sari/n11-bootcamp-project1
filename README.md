@@ -16,10 +16,14 @@ src/
 │   └── User.java
 ├── PaymentSystem/
 │   └── Payment.java
-└── PaymentMethods/
-    ├── ApplePay.java
-    ├── CreditCard.java
-    └── Paypal.java
+├── PaymentMethods/
+│   ├── ApplePay.java
+│   ├── CreditCard.java
+│   └── Paypal.java
+└── Services/
+    ├── UserService.java
+    ├── MenuService.java
+    └── ActionHandler.java
 ```
 
 ---
@@ -29,23 +33,12 @@ src/
 ### `Interfaces/IPrintable.java`
 Yazdırma sorumluluğunu ayrı bir arayüzde tanımlar.
 
-```java
-public interface IPrintable {
-    void printPayment(int value);
-}
-```
 
 ### `Interfaces/IPayment.java`
 Ödeme yöntemlerine özgü sözleşmeyi tanımlar, `IPrintable` arayüzünü extend eder.
 
-```java
-public interface IPayment extends IPrintable {
-    String getPaymentType();
-}
-```
 
 Bu ayrım **Interface Segregation** ve **Single Responsibility** prensiplerine uygundur. Yazdırma sorumluluğu `IPrintable`'da, ödeme kimliği sorumluluğu `IPayment`'ta ayrı ayrı tanımlanmıştır.
-
 
 ---
 
@@ -58,37 +51,38 @@ Her sınıf `IPayment` arayüzünü implement eder ve farklı bir ödeme yöntem
 | `CreditCard.java` | Kredi Kartı |
 | `Paypal.java` | PayPal |
 
-Yeni bir ödeme yöntemi eklemek için yalnızca `IPayment` arayüzünü implement eden yeni bir sınıf oluşturmak yeterlidir. Mevcut kodda hiçbir değişiklik gerekmez. Bu **Open/Closed Principle (OCP)** prensibiyle örtüşmektedir
+Yeni bir ödeme yöntemi eklemek için yalnızca `IPayment` arayüzünü implement eden yeni bir sınıf oluşturmak yeterlidir. Mevcut kodda hiçbir değişiklik gerekmez. Bu **Open/Closed Principle (OCP)** prensibiyle örtüşmektedir.
 
 ---
 
 ### `User/User.java`
 Sistemdeki kullanıcıyı temsil eder. Yalnızca kullanıcı verilerini ve kullanıcıya ait işlemleri yönetir, ödeme mantığıyla ilgilenmez. Bu **Single Responsibility Principle (SRP)** gereğidir.
 
-**Alanlar:**
-- `username` — kullanıcı adı
-- `balance` — mevcut bakiye (varsayılan: 0)
-- `payments` — kullanıcının kayıtlı ödeme yöntemleri listesi
-
 ---
 
 ### `PaymentSystem/Payment.java`
-Kullanıcı üzerindeki ödeme işlemlerini yönetir. Kullanıcı verilerini değil, yalnızca ödeme mantığını kapsar. Bu **Single Responsibility Principle (SRP)** gereğidir; ödeme işlemleri `User` sınıfına değil, ayrı bir `Payment` sınıfına taşınmıştır.
+Kullanıcı üzerindeki ödeme işlemlerini yönetir. Kullanıcı verilerini değil, yalnızca ödeme mantığını kapsar. Bu **Single Responsibility Principle (SRP)** gereğidir.
 
 ---
 
-### `Main.java`
-Kullanıcıdan girdi alarak sistemi simüle eden ana sınıftır. `Scanner` ile interaktif bir menü sunulur ve kullanıcı çıkış yapana kadar döngü devam eder.
+### `Services/`
+`Main.java`'yı tek bir sorumluluktan ibaret hale getirmek için iş mantığı üç servis sınıfına ayrılmıştır.
 
-Mevcut ödeme yöntemleri dinamik bir liste üzerinden gösterilir. Yeni bir ödeme yöntemi eklemek için yalnızca `availableMethods` listesine ekleme yapmak yeterlidir, başka bir değişiklik gerekmez. Bu da **Open/Closed Principle (OCP)** ile örtüşmektedir.
+| Sınıf | Sorumluluk |
+|-------|-----------|
+| `UserService.java` | Kullanıcı oluşturma ve başlangıç bakiyesi ayarlama |
+| `MenuService.java` | Menü gösterimi ve kullanıcı girdisi okuma |
+| `ActionHandler.java` | Menü seçimine göre ilgili işlemi yönlendirme |
+
+Bu ayrım **Single Responsibility Principle (SRP)** gereğidir. `Main.java` yalnızca bağımlılıkları bir araya getirir ve döngüyü başlatır.
 
 ---
 
 ## Kullanılan OOP Prensipleri
 
-- **Single Responsibility (SRP)** — her sınıfın tek bir sorumluluğu vardır: `User` kullanıcı verilerini, `Payment` ödeme mantığını, `PaymentMethods` ödeme yöntemlerini yönetir
+- **Single Responsibility (SRP)** — her sınıfın tek bir sorumluluğu vardır
 - **Open/Closed (OCP)** — yeni ödeme yöntemi eklemek için mevcut kodu değiştirmek gerekmez, yalnızca yeni bir sınıf oluşturmak yeterlidir
 - **Interface Segregation (ISP)** — yazdırma sorumluluğu `IPrintable`'a, ödeme kimliği `IPayment`'a ayrılmıştır
 - **Encapsulation** — tüm alanlar `private`, erişim getter/setter üzerinden sağlanır
 - **Polymorphism** — `IPayment` arayüzü sayesinde farklı ödeme yöntemleri aynı şekilde kullanılabilir
-- **Dependency Injection** — `Payment` sınıfı `User` nesnesini constructor üzerinden alır
+- **Dependency Injection** — `Payment` ve `ActionHandler` bağımlılıklarını constructor üzerinden alır

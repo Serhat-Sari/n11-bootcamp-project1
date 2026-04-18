@@ -13,17 +13,6 @@ public class Payment {
     }
 
     public void withdrawFromUser(int value, IPayment payment) {
-        ArrayList<IPayment> userPayments = user.getPaymentMethods();
-
-        if(userPayments.isEmpty()){
-            System.out.println("User has no payment method in their account!");
-            System.out.println("Add payment method!");
-            return;
-        }
-        if(!userPayments.contains(payment)) {
-            System.out.println("User does not have this payment method!");
-            return;
-        }
         if (user.getBalance() < value) {
             System.out.println("User doesn't have enough money in their account!");
             System.out.println("Please add more money!");
