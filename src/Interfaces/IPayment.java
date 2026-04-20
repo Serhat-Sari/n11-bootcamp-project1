@@ -1,5 +1,5 @@
 package Interfaces;
 
-public interface IPayment extends IPrintable{
-    String getPaymentType();
+public abstract class IPayment implements IPrintable {
+    public abstract String  getPaymentType();
 }

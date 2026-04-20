@@ -1,10 +1,9 @@
 package Services;
 
 import Interfaces.IPayment;
-import PaymentMethods.ApplePay;
-import PaymentMethods.CreditCard;
-import PaymentMethods.Paypal;
 
+import java.io.File;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Scanner;
 
@@ -15,11 +14,38 @@ public class MenuService {
     public MenuService(Scanner input) {
         this.input = input;
         this.availableMethods = new ArrayList<>();
-        availableMethods.add(new ApplePay());
-        availableMethods.add(new CreditCard());
-        availableMethods.add(new Paypal());
+        loadPaymentMethods();
     }
 
+    private void loadPaymentMethods(){
+        try{
+            ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+            URL resource = classLoader.getResource("PaymentMethods");
+
+            if(resource == null){
+                System.out.println("Package not found!");
+                return;
+            }
+
+            File directory = new File(resource.toURI());
+
+            for(File file : directory.listFiles()){
+                if(file.getName().endsWith(".class")){
+                    String className = "PaymentMethods." + file.getName().replace(".class","");
+                    Class<?> cls = Class.forName(className);
+
+                    if(IPayment.class.isAssignableFrom(cls) && !cls.isInterface()){
+                        IPayment method = (IPayment) cls.getDeclaredConstructor().newInstance();
+                        availableMethods.add(method);
+                    }
+                }
+            }
+        }
+        catch(Exception ex){
+            ex.printStackTrace();
+        }
+
+    }
     public int showMainMenu() {
         System.out.println("\n--- Menu ---");
         System.out.println("1. Add payment method");
@@ -28,6 +54,13 @@ public class MenuService {
         System.out.println("4. View balance");
         System.out.println("5. Exit");
         System.out.print("Choose an option: ");
+
+        while (!input.hasNextInt()) {
+            System.out.println("Invalid input, please enter a number!");
+            input.nextLine(); // flush the invalid input
+            System.out.print("Choose an option: ");
+        }
+
         int option = input.nextInt();
         input.nextLine();
         return option;

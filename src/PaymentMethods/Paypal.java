@@ -2,7 +2,7 @@ package PaymentMethods;
 
 import Interfaces.IPayment;
 
-public class Paypal implements IPayment{
+public class Paypal extends IPayment{
 
     public boolean equals(Object obj) {
         return obj instanceof Paypal;

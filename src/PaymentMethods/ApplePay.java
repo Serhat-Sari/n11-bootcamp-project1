@@ -2,7 +2,7 @@ package PaymentMethods;
 
 import Interfaces.IPayment;
 
-public class ApplePay implements IPayment {
+public class ApplePay extends IPayment {
 
     public boolean equals(Object obj) {
         return obj instanceof ApplePay;

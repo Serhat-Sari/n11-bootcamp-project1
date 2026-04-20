@@ -1,7 +1,7 @@
 package PaymentMethods;
 
 import Interfaces.IPayment;
-public class CreditCard implements IPayment{
+public class CreditCard extends IPayment {
 
     public boolean equals(Object obj) {
         return obj instanceof CreditCard;
